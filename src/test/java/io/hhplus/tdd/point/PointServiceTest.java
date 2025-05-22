@@ -49,4 +49,20 @@ public class PointServiceTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("최대 포인트 잔고를 초과했습니다.");
     }
+
+    @Test
+    @DisplayName("유저 포인트 조회하기")
+    void getUserPoint() {
+        // given
+        long id = 1L;
+        long currentPoint = 100000L;
+
+        UserPoint expectedUserPoint = userPointTable.insertOrUpdate(id, currentPoint);
+
+        // when
+        UserPoint userPoint = pointService.getUserPointById(id);
+
+        // then
+        assertThat(expectedUserPoint.point()).isEqualTo(userPoint.point());
+    }
 }
