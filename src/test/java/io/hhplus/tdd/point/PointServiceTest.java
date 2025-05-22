@@ -92,6 +92,27 @@ public class PointServiceTest {
     }
 
     @Test
+    @DisplayName("유저 포인트 사용 시 이력 저장")
+    void recordUserPointUseHistory() {
+        // given
+        Long id = 1L;
+        long currentPoint = 100000L;
+        long usePoint = 50000L;
+        userPointTable.insertOrUpdate(id, currentPoint);
+
+        // when
+        pointService.useUserPoint(id, usePoint);
+
+        // then
+        verify(pointHistoryTable).insert(
+                eq(id),
+                eq(usePoint),
+                eq(TransactionType.USE),
+                anyLong()
+        );
+    }
+
+    @Test
     @DisplayName("사용 시 포인트 잔고 부족하면 예외 발생")
     void useOverPointShouldThrowException() {
         // given
