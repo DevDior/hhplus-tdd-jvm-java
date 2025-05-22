@@ -15,12 +15,7 @@ public class PointService {
 
     public UserPoint charge(long id, long amount) {
         UserPoint currentUserPoint = userPointTable.selectById(id);
-        long updatedAmount = currentUserPoint.point() + amount;
-
-        if (updatedAmount > MAX_POINT) {
-            throw new IllegalStateException("최대 포인트 잔고를 초과했습니다.");
-        }
-
-        return userPointTable.insertOrUpdate(id, updatedAmount);
+        UserPoint updatedUserPoint = currentUserPoint.charge(amount);
+        return userPointTable.insertOrUpdate(id, updatedUserPoint.point());
     }
 }
