@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PointServiceTest {
 
@@ -31,5 +32,21 @@ public class PointServiceTest {
 
         //then
         assertThat(updatedUserPoint.point()).isEqualTo(1500L);
+    }
+
+    @Test
+    @DisplayName("충전 시 최대 포인트 잔고 초과하면 예외 발생")
+    void chargeOverMaxPointShouldThrowException() {
+        // given
+        long id = 1L;
+        long currentPoint = 900000L;
+        long chargePoint = 200000L;
+
+        userPointTable.insertOrUpdate(id, currentPoint);
+
+        // when & then
+        assertThatThrownBy(() -> pointService.charge(id, chargePoint))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("최대 포인트 잔고를 초과했습니다.");
     }
 }
