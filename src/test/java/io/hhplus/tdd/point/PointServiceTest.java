@@ -1,26 +1,32 @@
 package io.hhplus.tdd.point;
 
+import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 public class PointServiceTest {
 
+    private PointHistoryTable pointHistoryTable;
     private UserPointTable userPointTable;
     private PointService pointService;
 
     @BeforeEach
     void setup() {
+        pointHistoryTable = mock(PointHistoryTable.class);
         userPointTable = new UserPointTable();
-        pointService = new PointService(null, userPointTable);
+        pointService = new PointService(pointHistoryTable, userPointTable);
     }
 
     @Test
-    @DisplayName("유저 포인트 충전하기")
+    @DisplayName("유저 포인트 충전")
     void userPointCharge() {
         // given
         long id = 1L;
@@ -81,7 +87,7 @@ public class PointServiceTest {
     }
 
     @Test
-    @DisplayName("유저 포인트 조회하기")
+    @DisplayName("유저 포인트 조회")
     void getUserPoint() {
         // given
         long id = 1L;
@@ -94,5 +100,27 @@ public class PointServiceTest {
 
         // then
         assertThat(userPoint.point()).isEqualTo(point);
+    }
+
+    @Test
+    @DisplayName("유저 포인트 충전/사용 내역 조회")
+    void getUserPointHistories() {
+        // given
+        long userId = 1L;
+        long now = System.currentTimeMillis();
+        List<PointHistory> fakeHistories = List.of(
+                new PointHistory(1, userId, 1000L, TransactionType.CHARGE, now),
+                new PointHistory(2, userId, 500L, TransactionType.USE, now)
+        );
+
+        when(pointHistoryTable.selectAllByUserId(userId)).thenReturn(fakeHistories);
+
+        // when
+        List<PointHistory> pointHistories = pointService.getUserPointHistories(userId);
+
+        // then
+        assertThat(pointHistories).hasSize(2);
+        assertThat(pointHistories.get(0).type()).isEqualTo(TransactionType.CHARGE);
+        assertThat(pointHistories.get(1).type()).isEqualTo(TransactionType.USE);
     }
 }

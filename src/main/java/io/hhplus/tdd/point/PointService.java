@@ -5,6 +5,8 @@ import io.hhplus.tdd.database.UserPointTable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class PointService {
@@ -27,5 +29,9 @@ public class PointService {
 
     public UserPoint getUserPointById(long id) {
         return userPointTable.selectById(id);
+    }
+
+    public List<PointHistory> getUserPointHistories(long userId) {
+        return pointHistoryTable.selectAllByUserId(userId);
     }
 }
