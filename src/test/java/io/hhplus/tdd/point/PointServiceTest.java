@@ -15,12 +15,14 @@ public class PointServiceTest {
         long id = 1L;
         long amount = 1000L;
         UserPointTable userPointTable = new UserPointTable();
-        UserPoint beforeUserPoint = userPointTable.insertOrUpdate(id, 500L);
+        userPointTable.insertOrUpdate(id, 500L);
+
+        PointService pointService = new PointService(null, userPointTable);
 
         // when
-        UserPoint userPoint = pointService.charge(id, amount);
+        UserPoint updatedUserPoint = pointService.charge(id, amount);
 
         //then
-        assertThat(userPoint.point()).isEqualTo(1500L);
+        assertThat(updatedUserPoint.point()).isEqualTo(1500L);
     }
 }
