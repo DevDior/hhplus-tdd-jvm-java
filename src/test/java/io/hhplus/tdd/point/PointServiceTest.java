@@ -41,7 +41,6 @@ public class PointServiceTest {
         long id = 1L;
         long currentPoint = 900000L;
         long chargePoint = 200000L;
-
         userPointTable.insertOrUpdate(id, currentPoint);
 
         // when & then
@@ -64,6 +63,21 @@ public class PointServiceTest {
 
         // then
         assertThat(userPoint.point()).isEqualTo(currentPoint - usePoint);
+    }
+
+    @Test
+    @DisplayName("사용 시 포인트 잔고 부족하면 예외 발생")
+    void useOverPointShouldThrowException() {
+        // given
+        long id = 1L;
+        long currentPoint = 10000L;
+        long usePoint = 50000L;
+        userPointTable.insertOrUpdate(id, currentPoint);
+
+        // when & then
+        assertThatThrownBy(() -> pointService.useUserPoint(id, usePoint))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("포인트 잔고가 부족합니다.");
     }
 
     @Test
