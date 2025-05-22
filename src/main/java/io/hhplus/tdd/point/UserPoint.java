@@ -19,4 +19,13 @@ public record UserPoint(
 
         return new UserPoint(id, total, System.currentTimeMillis());
     }
+
+    public UserPoint use(long amount) {
+        long total = point - amount;
+        if (total < 0L) {
+            throw new IllegalStateException("포인트 잔고가 부족합니다.");
+        }
+
+        return new UserPoint(id, total, System.currentTimeMillis());
+    }
 }

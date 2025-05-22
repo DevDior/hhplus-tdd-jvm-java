@@ -51,18 +51,34 @@ public class PointServiceTest {
     }
 
     @Test
+    @DisplayName("유저 포인트 사용")
+    void useUserPoint() {
+        // given
+        long id = 1L;
+        long currentPoint = 100000L;
+        long usePoint = 50000L;
+        userPointTable.insertOrUpdate(id, currentPoint);
+
+        // when
+        UserPoint userPoint = pointService.useUserPoint(id, usePoint);
+
+        // then
+        assertThat(userPoint.point()).isEqualTo(currentPoint - usePoint);
+    }
+
+    @Test
     @DisplayName("유저 포인트 조회하기")
     void getUserPoint() {
         // given
         long id = 1L;
-        long currentPoint = 100000L;
+        long point = 100000L;
 
-        UserPoint expectedUserPoint = userPointTable.insertOrUpdate(id, currentPoint);
+        userPointTable.insertOrUpdate(id, point);
 
         // when
         UserPoint userPoint = pointService.getUserPointById(id);
 
         // then
-        assertThat(expectedUserPoint.point()).isEqualTo(userPoint.point());
+        assertThat(userPoint.point()).isEqualTo(point);
     }
 }
