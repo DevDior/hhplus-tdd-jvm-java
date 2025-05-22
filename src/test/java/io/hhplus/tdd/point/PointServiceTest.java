@@ -36,8 +36,28 @@ public class PointServiceTest {
         // when
         UserPoint updatedUserPoint = pointService.charge(id, amount);
 
-        //then
+        // then
         assertThat(updatedUserPoint.point()).isEqualTo(1500L);
+    }
+
+    @Test
+    @DisplayName("유저 포인트 충전 시 이력 저장")
+    void recordUserPointChargeHistory() {
+        // given
+        long id = 1L;
+        long amount = 1000L;
+        userPointTable.insertOrUpdate(id, 0L);
+
+        // when
+        pointService.charge(id, amount);
+
+        // then
+        verify(pointHistoryTable).insert(
+                eq(id),
+                eq(amount),
+                eq(TransactionType.CHARGE),
+                anyLong()
+        );
     }
 
     @Test
